@@ -12,6 +12,11 @@ public:
         this->key = key;
         value = v;
     }
+    ~node(){
+        if(next!=NULL){
+           delete next;
+        }
+    }
 };
 
 template<typename T>
@@ -19,6 +24,34 @@ class Hashtable{
     int cs; ///Current Size
     int ts; ///Max Arr Size
     node<T>** buckets;
+
+    void rehash(){
+
+        node<T>** oldbuckets = buckets;
+        int oldTs = ts;
+        ts = ts*2;
+        cs = 0;
+        buckets = new node<T>[ts];
+
+        for(int i=0;i<ts;i++){
+            buckets[i] = NULL;
+        }
+        //READ the element from old table and insert them in new table
+        for(int i=0;i<oldTs;i++){
+            node<T> *temp = oldbuckets[i];
+            if(temp!=NULL){
+                while(temp!=NULL){
+                    insert(temp->key,temp->value);
+                    temp = temp->next;
+                }
+
+
+            //delete the old table row
+            delete oldbuckets[i];
+            }
+        }
+        delete [] oldbuckets;
+    }
 
     int hashFn(string key){
         int L = key.length();
@@ -54,6 +87,14 @@ public:
         n->next = buckets[i];
         buckets[i] = n;
 
+        cs++;
+
+        float load_Factor = (float)cs/ts;
+        if(load_Factor>.7){
+            cout<<"Load factor is "<<load_Factor<<endl;
+            rehash();
+        }
+
     }
     ///Print it
     void print(){
@@ -80,6 +121,26 @@ public:
             temp = temp->next;
         }
         return NULL;
+    }
+
+    T* erase(string key){
+    //delete the node with given key.
+    }
+
+    T& operator[] (string key) {
+        T* temp = search(key);
+
+        if(temp == key){
+            //Insertion
+            T garbage;
+            insert(key,garbage);
+
+            T* value = search(key);
+            return *value;
+        }
+        //Else Return the box(update /search the box)
+
+        return *temp;
     }
 };
 

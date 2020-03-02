@@ -1,0 +1,6 @@
+/*
+Binary search
+applied on the sorted array only.
+
+
+*/
